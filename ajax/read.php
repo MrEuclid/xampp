@@ -14,7 +14,7 @@ if (isset($_POST['id'])) {
     try {
         // Assuming $pdo is the connection variable inside connectDB.php
         // Adjust the table name ('students') and column names to match your database schema
-        $stmt = $pdo->prepare("SELECT id, name, class, email FROM students WHERE id = :id");
+        $stmt = $pdo->prepare("SELECT studentID, Family_name, first_name,gender,Date_birth FROM students WHERE id = :id");
         $stmt->execute(['id' => $studentId]);
         
         // Fetch matching records into an array
