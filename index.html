@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Search Portal</title>
+    <!-- Include jQuery via CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        .search-box { margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+
+    <h2>Student Record Lookup</h2>
+
+    <div class="search-box">
+        <label for="student_id">Enter Student ID: </label>
+        <input type="text" id="student_id" placeholder="e.g., 1005">
+        <button id="search_btn">Search</button>
+    </div>
+
+    <h3>Results:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody id="student_table_body">
+            <tr>
+                <td colspan="4" style="text-align: center;">No data searched yet.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        $(document).ready(function() {
+            $('#search_btn').on('click', function() {
+                var studentId = $('#student_id').val().trim();
+
+                if (studentId === '') {
+                    alert('Please enter a student ID.');
+                    return;
+                }
+
+                // Send AJAX POST request to read.php
+                $.ajax({
+                    url: 'read.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { id: studentId },
+                    success: function(response) {
+                        var tbody = $('#student_table_body');
+                        tbody.empty(); // Clear previous results
+
+                        // Check if the response contains records
+                        if (response.length > 0) {
+                            // Loop through the returned JSON array and build table rows
+                            $.each(response, function(index, student) {
+                                var row = '<tr>' +
+                                    '<td>' + student.id + '</td>' +
+                                    '<td>' + student.name + '</td>' +
+                                    '<td>' + student.class + '</td>' +
+                                    '<td>' + student.email + '</td>' +
+                                    'лля' + '</tr>';
+                                tbody.append(row);
+                            });
+                        } else {
+                            tbody.append('<tr><td colspan="4" style="text-align: center;">No student found with that ID.</td></tr>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error: " + status + error);
+                        alert('An error occurred while fetching data.');
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
