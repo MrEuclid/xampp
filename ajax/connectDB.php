@@ -1,36 +1,27 @@
 <?php
-// 1. Database Connection Variables
-$host = 'localhost'; // The server where the database lives (your local machine)
-$db   = 'pio';       // The name of your database
-$user = 'root';      // The default XAMPP database username
-$pass = 'pio2002pio';// The password you configured
-$charset = 'utf8mb4';// Use standard UTF-8 encoding for text
+// 1. Define database connection variables for local XAMPP server
+$host = "localhost";      // The server where the database is hosted
+$username = "root";       // Default XAMPP MySQL username
+$password = "pio2002pio";           // Default XAMPP MySQL password (leave empty)
+$dbname = "pio";          // The name of your database
 
-// 2. Data Source Name (DSN)
-// This is the formatted string that tells PDO exactly where and what to connect to.
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-
-// 3. PDO Options
-// These settings ensure PDO throws detailed error messages and fetches data cleanly.
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Throw exceptions on errors
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       // Return data as associative arrays (e.g., $row['name'])
-    PDO::ATTR_EMULATE_PREPARES   => false,                  // Use true prepared statements for maximum security
-];
-
-// 4. Establish the Connection
-try {
-    // We create a new PDO instance and store it in the $pdo variable
-    $pdo = new PDO($dsn, $user, $pass, $options);
+// 2. Create the MySQLi connection
+$conn = new mysqli($host, $username, $password, $dbname);
+echo "Database connected!";
+// 3. Check if the connection was successful
+if ($conn->connect_error) {
+    // If this is strictly used for an AJAX/JSON backend, it is best to output a JSON error
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['error' => 'Database connection failed: ' . $conn->connect_error]);
     
-    // Optional: You can uncomment the line below to test if it works, 
-    // but remember to comment it out again before building the rest of the site!
-     echo "Connected to the PIO database successfully!"; 
-    
-} catch (\PDOException $e) {
-    // If the connection fails, this catches the error and displays it
-    // Example: Wrong password, database doesn't exist, or MySQL isn't running
-    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+    // Stop the script from running any further
+    exit(); 
 }
-?>
 
+// 4. Set the character set to utf8mb4 to safely handle all characters (including Khmer text)
+$conn->set_charset("utf8mb4");
+
+// Note: You do not need to echo anything on a successful connection. 
+// If it works, this file simply finishes running silently, 
+// and the script that included it (like read.php) takes over.
+?>
