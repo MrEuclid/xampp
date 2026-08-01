@@ -97,10 +97,9 @@
                     <thead>
                         <tr class="bg-gray-100 text-gray-600 text-xs uppercase tracking-wider">
                             <th class="py-3 px-6 border-b">ID</th>
-                            <th class="py-3 px-6 border-b">Family Name</th>
-                            <th class="py-3 px-6 border-b">First Name</th>
+                            <th class="py-3 px-6 border-b">Name</th>
                             <th class="py-3 px-6 border-b">Gender</th>
-                            <th class="py-3 px-6 border-b">Date of Birth</th>
+                            <th class="py-3 px-6 border-b">Grade</th>
                         </tr>
                     </thead>
                     <tbody id="student_table_body" class="text-gray-700 text-sm">
@@ -160,7 +159,7 @@
                     url: 'ajax/read.php',
                     type: 'POST',
                     dataType: 'json',
-                    data: { id: studentId },
+                 //   data: { id: studentId },
                     success: function(response) {
                         var tbody = $('#student_table_body');
                         tbody.empty(); // Clear previous results
@@ -170,9 +169,10 @@
                             $.each(response, function(index, student) {
                                 var row = '<tr class="hover:bg-gray-50 border-b border-gray-100">' +
                                     '<td class="py-3 px-6 font-medium text-gray-900">' + student.id + '</td>' +
+                                    '<td class="py-3 px-6">' + student.studentID + '</td>' +
                                     '<td class="py-3 px-6">' + student.name + '</td>' +
-                                    '<td class="py-3 px-6">' + student.class + '</td>' +
-                                    '<td class="py-3 px-6">' + student.email + '</td>' +
+                                    '<td class="py-3 px-6">' + student.gender + '</td>' +
+                                    '<td class="py-3 px-6">' + student.grade + '</td>' +
                                     '</tr>';
                                 tbody.append(row);
                             });
