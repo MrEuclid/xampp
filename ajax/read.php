@@ -13,8 +13,6 @@ $query = "SELECT
             studentID, 
             Family_name, 
             First_name, 
-            Khmer_family_name, 
-            Khmer_first_name, 
             Gender, 
             Date_birth, 
             Gone 

@@ -154,25 +154,24 @@
                     return;
                 }
 
-                // Send AJAX POST request to ajax/read.php
+                // Send AJAX POST request to ajax/testRead.php
                 $.ajax({
-                    url: 'ajax/read.php',
+                    url: 'ajax/testRead.php',
                     type: 'POST',
                     dataType: 'json',
-                 //   data: { id: studentId },
+                    data: { studentID: studentId },
                     success: function(response) {
                         var tbody = $('#student_table_body');
                         tbody.empty(); // Clear previous results
-
+console.log(response); // Debugging line to check the response
                         // Check if the response contains records
                         if (response && response.length > 0) {
                             $.each(response, function(index, student) {
                                 var row = '<tr class="hover:bg-gray-50 border-b border-gray-100">' +
                                     '<td class="py-3 px-6 font-medium text-gray-900">' + student.id + '</td>' +
                                     '<td class="py-3 px-6">' + student.studentID + '</td>' +
-                                    '<td class="py-3 px-6">' + student.name + '</td>' +
-                                    '<td class="py-3 px-6">' + student.gender + '</td>' +
-                                    '<td class="py-3 px-6">' + student.grade + '</td>' +
+                                    '<td class="py-3 px-6">' + student.Name + '</td>' +
+                                    '<td class="py-3 px-6">' + student.Gender + '</td>' +
                                     '</tr>';
                                 tbody.append(row);
                             });
@@ -253,7 +252,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             <!-- READ Card -->
-            <a href="read.php" class="group block bg-white rounded-2xl p-6 border-t-4 border-pioGreen-600 shadow-sm hover:shadow-md transition-all duration-200">
+            <a href="testRead.php" class="group block bg-white rounded-2xl p-6 border-t-4 border-pioGreen-600 shadow-sm hover:shadow-md transition-all duration-200">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-xl font-bold text-gray-800 group-hover:text-pioGreen-700 transition-colors">📂 View Records</h3>
                     <span class="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-1 rounded">READ</span>

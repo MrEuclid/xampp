@@ -11,11 +11,8 @@ $targetStudentID = 4936;
 // 3. Prepare the SQL query
 $query = "SELECT 
             studentID, 
-            Family_name, 
-            First_name, 
-            Gender, 
-            Date_birth, 
-            Gone 
+            concat(Family_name, ', ', First_name) AS Name,  
+            Gender 
           FROM students 
           WHERE studentID = ?";
           
