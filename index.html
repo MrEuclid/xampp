@@ -2,88 +2,126 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Search Portal</title>
-    <!-- Include jQuery via CDN -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIO Portal</title>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configure Custom School Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pioGreen: {
+                            600: '#15803d', // Tailwind green-700 equivalent
+                            700: '#166534', // Tailwind green-800 equivalent
+                            900: '#14532d', // Tailwind green-900 equivalent
+                        },
+                        pioYellow: {
+                            400: '#facc15', // Tailwind yellow-400
+                            500: '#eab308', // Tailwind yellow-500
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; }
-        .search-box { margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 flex flex-col min-h-screen">
 
-    <h2>Student Record Lookup</h2>
+    <!-- Header -->
+    <header class="bg-pioGreen-700 shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <!-- Simple SVG Logo Placeholder -->
+                <div class="w-10 h-10 bg-pioYellow-400 rounded-full flex items-center justify-center text-pioGreen-900 font-bold text-xl shadow-inner">
+                    PIO
+                </div>
+                <h1 class="text-2xl font-bold text-pioYellow-400 tracking-wide">PIO Portal</h1>
+            </div>
+            <nav>
+                <span class="text-white text-sm bg-pioGreen-900 px-3 py-1 rounded-full border border-pioGreen-600">Student Access</span>
+            </nav>
+        </div>
+    </header>
 
-    <div class="search-box">
-        <label for="student_id">Enter Student ID: </label>
-        <input type="text" id="student_id" placeholder="e.g., 1005">
-        <button id="search_btn">Search</button>
-    </div>
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-10 w-full">
+        
+        <!-- Welcome Banner -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-10 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-3">Welcome to the Student Database</h2>
+            <p class="text-gray-500 max-w-2xl mx-auto">
+                Use this portal to manage school records. This project demonstrates basic Create, Read, Update, and Delete (CRUD) operations using PHP and MySQL.
+            </p>
+        </div>
 
-    <h3>Results:</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Class</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody id="student_table_body">
-            <tr>
-                <td colspan="4" style="text-align: center;">No data searched yet.</td>
-            </tr>
-        </tbody>
-    </table>
+        <!-- CRUD Navigation Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- READ Card -->
+            <a href="ajax/read.php" class="group block bg-white rounded-2xl p-6 border-t-4 border-pioGreen-600 shadow-sm hover:shadow-md transition-all duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-800 group-hover:text-pioGreen-700 transition-colors">📂 View Records</h3>
+                    <span class="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-1 rounded">READ</span>
+                </div>
+                <p class="text-gray-500 text-sm mb-4">Browse the current database of enrolled students and view their details.</p>
+                <div class="text-pioGreen-700 font-semibold text-sm flex items-center gap-1">
+                    Open Database <span>&rarr;</span>
+                </div>
+            </a>
 
-    <script>
-        $(document).ready(function() {
-            $('#search_btn').on('click', function() {
-                var studentId = $('#student_id').val().trim();
+            <!-- CREATE Card -->
+            <a href="create.php" class="group block bg-white rounded-2xl p-6 border-t-4 border-pioYellow-400 shadow-sm hover:shadow-md transition-all duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-800 group-hover:text-pioYellow-500 transition-colors">✏️ Add New Student</h3>
+                    <span class="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-1 rounded">CREATE</span>
+                </div>
+                <p class="text-gray-500 text-sm mb-4">Register a new student into the system by filling out the enrollment form.</p>
+                <div class="text-pioYellow-500 font-semibold text-sm flex items-center gap-1">
+                    Open Form <span>&rarr;</span>
+                </div>
+            </a>
 
-                if (studentId === '') {
-                    alert('Please enter a student ID.');
-                    return;
-                }
+            <!-- UPDATE Card -->
+            <a href="update.php" class="group block bg-white rounded-2xl p-6 border-t-4 border-blue-500 shadow-sm hover:shadow-md transition-all duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">🔄 Update Record</h3>
+                    <span class="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-1 rounded">UPDATE</span>
+                </div>
+                <p class="text-gray-500 text-sm mb-4">Edit existing student information, correct mistakes, or update contact details.</p>
+                <div class="text-blue-600 font-semibold text-sm flex items-center gap-1">
+                    Edit Records <span>&rarr;</span>
+                </div>
+            </a>
 
-                // Send AJAX POST request to read.php
-                $.ajax({
-                    url: 'read.php',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: { id: studentId },
-                    success: function(response) {
-                        var tbody = $('#student_table_body');
-                        tbody.empty(); // Clear previous results
+            <!-- DELETE Card -->
+            <a href="delete.php" class="group block bg-white rounded-2xl p-6 border-t-4 border-red-500 shadow-sm hover:shadow-md transition-all duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-800 group-hover:text-red-600 transition-colors">🗑️ Delete Record</h3>
+                    <span class="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-1 rounded">DELETE</span>
+                </div>
+                <p class="text-gray-500 text-sm mb-4">Safely remove a student's data from the active database system.</p>
+                <div class="text-red-600 font-semibold text-sm flex items-center gap-1">
+                    Manage Removals <span>&rarr;</span>
+                </div>
+            </a>
 
-                        // Check if the response contains records
-                        if (response.length > 0) {
-                            // Loop through the returned JSON array and build table rows
-                            $.each(response, function(index, student) {
-                                var row = '<tr>' +
-                                    '<td>' + student.id + '</td>' +
-                                    '<td>' + student.name + '</td>' +
-                                    '<td>' + student.class + '</td>' +
-                                    '<td>' + student.email + '</td>' +
-                                    'лля' + '</tr>';
-                                tbody.append(row);
-                            });
-                        } else {
-                            tbody.append('<tr><td colspan="4" style="text-align: center;">No student found with that ID.</td></tr>');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("AJAX Error: " + status + error);
-                        alert('An error occurred while fetching data.');
-                    }
-                });
-            });
-        });
-    </script>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-6 text-center text-sm mt-auto">
+        <p>&copy; 2026 People Improvement Organization (PIO). Web Development Class Project.</p>
+        <p class="mt-1">Powered by XAMPP, PHP, and MySQL.</p>
+    </footer>
 
 </body>
 </html>
