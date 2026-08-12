@@ -20,7 +20,7 @@ try {
 
 // 2. Fetch Student IDs for the Datalist
 try {
-    // Querying the students table to populate the datalist for the search
+    // Querying the id_year_grade table to populate the datalist for the search
     $result = $conn->query("SELECT DISTINCT Grade FROM id_year_grade WHERE Year = 2026 AND School = 'PIOHS' ");
 } catch (mysqli_sql_exception $e) {
     die("Query failed: " . htmlspecialchars($e->getMessage()));
@@ -97,7 +97,7 @@ try {
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-10">
             <div class="flex flex-col sm:flex-row items-center gap-4">
                 <div class="w-full flex-grow">
-                    <label for="class_id" class="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
+                    <label for="class_id" class="block text-sm font-medium text-gray-700 mb-1">Class ID</label>
                     
                     <!-- Integrated Datalist Input -->
                     <input type="text" 
@@ -159,9 +159,9 @@ try {
     <script>
         $(document).ready(function() {
             $('#search_btn').on('click', function() {
-                var gradeId = $('#grade_id').val().trim();
+                var classID = $('#class_id').val().trim();
 
-                if (gradeId === '') {
+                if (classID === '') {
                     alert('Please enter a class ID.');
                     return;
                 }
@@ -171,11 +171,11 @@ try {
                     url: 'ajax/getClassList.php',
                     type: 'POST',
                     dataType: 'json',
-                    data: { gradeID: gradeId }, 
+                    data: { classID: classID }, 
                     success: function(response) {
                         var tbody = $('#student_table_body');
                         tbody.empty(); // Clear previous results
-
+console.log("AJAX Response:", response); // Log the response for debugging
                         // Check if the response exists and does NOT contain an error property
                         if (response && !response.error) {
                             
@@ -183,7 +183,7 @@ try {
                             var row = '<tr class="hover:bg-gray-50 border-b border-gray-100">' +
                                 '<td class="py-3 px-6">' + response.studentID + '</td>' +
                                 '<td class="py-3 px-6">' + response.Name + '</td>' +
-                                '<td class="py-3 px-6">' + response.Gender + '</td>' +
+                                '<td class="py-3 px-6">' + response.Grade + '</td>' +
                                 '</tr>';
             
                             tbody.append(row);
