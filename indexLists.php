@@ -156,6 +156,7 @@ try {
     </footer>
 
     <!-- AJAX Script -->
+  
     <script>
         $(document).ready(function() {
             $('#search_btn').on('click', function() {
@@ -175,22 +176,27 @@ try {
                     success: function(response) {
                         var tbody = $('#student_table_body');
                         tbody.empty(); // Clear previous results
-console.log("AJAX Response:", response); // Log the response for debugging
-                        // Check if the response exists and does NOT contain an error property
-                        if (response && !response.error) {
+                        
+                        console.log("AJAX Response:", response); // Log the response for debugging
+                        
+                        // Check if the response exists and has items
+                        if (response && response.length > 0) {
                             
-                            // Build the row directly from the single object properties
-                            var row = '<tr class="hover:bg-gray-50 border-b border-gray-100">' +
-                                '<td class="py-3 px-6">' + response.studentID + '</td>' +
-                                '<td class="py-3 px-6">' + response.Name + '</td>' +
-                                '<td class="py-3 px-6">' + response.Grade + '</td>' +
-                                '</tr>';
-            
-                            tbody.append(row);
+                            // Loop through the array of students
+                            $.each(response, function(index, student) {
+                                
+                                var row = '<tr class="hover:bg-gray-50 border-b border-gray-100">' +
+                                    '<td class="py-3 px-6">' + student.studentID + '</td>' +
+                                    '<td class="py-3 px-6">' + student.Name + '</td>' +
+                                    '<td class="py-3 px-6">' + student.Grade + '</td>' + 
+                                    '</tr>';
+
+                                tbody.append(row);
+                            });
                             
                         } else {
-                            // If response.error exists, display the not found message
-                            tbody.append('<tr><td colspan="3" class="text-center py-6 text-red-500">No student found with that ID.</td></tr>');
+                            // If array is empty or an error occurred
+                            tbody.append('<tr><td colspan="3" class="text-center py-6 text-red-500">No students found for this class.</td></tr>');
                         }
                     },
                     error: function(xhr, status, error) {

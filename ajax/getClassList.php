@@ -5,6 +5,7 @@ header('Content-Type: application/json; charset=utf-8');
 // 2. Include your database connection script
 require_once 'connectDB.php';
 $targetGrade = 'G12A' ;
+$targetGrade = $_POST['classID'] ;
 // 3. Prepare the SQL query
 $query = "SELECT 
 	students.studentID, 
