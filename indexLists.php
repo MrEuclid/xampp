@@ -21,7 +21,7 @@ try {
 // 2. Fetch Student IDs for the Datalist
 try {
     // Querying the students table to populate the datalist for the search
-    $result = $conn->query("SELECT studentID FROM students ORDER BY studentID ASC");
+    $result = $conn->query("SELECT DISTINCT Grade FROM id_year_grade WHERE Year = 2026 AND School = 'PIOHS' ");
 } catch (mysqli_sql_exception $e) {
     die("Query failed: " . htmlspecialchars($e->getMessage()));
 }
@@ -32,7 +32,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIO Portal - Student Lookup</title>
+    <title>PIO Portal - Class lists</title>
     
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -87,9 +87,9 @@ try {
         
         <!-- Welcome Banner -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-10 text-center">
-            <h2 class="text-3xl font-bold text-gray-800 mb-3">Student Record Lookup</h2>
+            <h2 class="text-3xl font-bold text-gray-800 mb-3">Class lists 2026</h2>
             <p class="text-gray-500 max-w-2xl mx-auto">
-                Select or enter a Student ID below to fetch records using AJAX and display them dynamically.
+                Select or class below to fetch records using AJAX and display them dynamically.
             </p>
         </div>
 
@@ -97,20 +97,20 @@ try {
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-10">
             <div class="flex flex-col sm:flex-row items-center gap-4">
                 <div class="w-full flex-grow">
-                    <label for="student_id" class="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
+                    <label for="class_id" class="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
                     
                     <!-- Integrated Datalist Input -->
                     <input type="text" 
-                           id="student_id" 
+                           id="class_id" 
                            list="id-list" 
-                           placeholder="Start typing an ID..." 
+                           placeholder="Start typing class eg G11A" 
                            autocomplete="off"
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pioGreen-600 focus:outline-none">
                     
                     <!-- Dynamic Datalist Generation with MySQLi -->
                     <datalist id="id-list">
                         <?php while ($row = $result->fetch_assoc()): ?>
-                            <option value="<?= htmlspecialchars($row['studentID']) ?>">
+                            <option value="<?= htmlspecialchars($row['Grade']) ?>">
                         <?php endwhile; ?>
                     </datalist>
 
@@ -159,19 +159,19 @@ try {
     <script>
         $(document).ready(function() {
             $('#search_btn').on('click', function() {
-                var studentId = $('#student_id').val().trim();
+                var gradeId = $('#grade_id').val().trim();
 
-                if (studentId === '') {
-                    alert('Please enter a student ID.');
+                if (gradeId === '') {
+                    alert('Please enter a class ID.');
                     return;
                 }
 
-                // Send AJAX POST request to ajax/testRead.php
+                // Send AJAX POST request to ajax/getClassList.php
                 $.ajax({
-                    url: 'ajax/testRead.php',
+                    url: 'ajax/getClassList.php',
                     type: 'POST',
                     dataType: 'json',
-                    data: { studentID: studentId }, 
+                    data: { gradeID: gradeId }, 
                     success: function(response) {
                         var tbody = $('#student_table_body');
                         tbody.empty(); // Clear previous results
