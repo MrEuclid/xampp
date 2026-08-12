@@ -7,7 +7,7 @@ $dbname = "pio";          // The name of your database
 
 // 2. Create the MySQLi connection
 $conn = new mysqli($host, $username, $password, $dbname);
-echo "Database connected!";
+// echo "Database connected!";
 // 3. Check if the connection was successful
 if ($conn->connect_error) {
     // If this is strictly used for an AJAX/JSON backend, it is best to output a JSON error
