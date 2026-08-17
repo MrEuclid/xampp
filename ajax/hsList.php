@@ -17,7 +17,7 @@ if ($stmt = $conn->prepare($query)) {
     // Get the result set
     $result = $stmt->get_result();
 
-    Initialize an empty array to hold all the records
+  //  Initialize an empty array to hold all the records
     $studentRecords = []; 
     // Loop through the result set one row at a time 
   while ($row = $result->fetch_assoc()) { 
