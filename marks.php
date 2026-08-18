@@ -61,6 +61,34 @@
 
  <div class="container-fluid">
 <form id="dataForm"> 
+        <div class="row">
+            <div   class ="col-12 text-center">
+                <!-- 1. Create a radio button group for selecting the school -->
+                     <div class="radio-group">
+        <strong>School:</strong><br>
+        <input type="radio" id="school_1" name="school" value="school_1">
+        <label for="school_1">High School</label>
+        
+        <input type="radio" id="school_2" name="school" value="school_2">
+        <label for="school_2">Primary School</label>
+    </div>
+
+    <div class="radio-group" id="year-container">
+        <strong>School Year:</strong><br>
+        <!-- Radio buttons will be injected here by JavaScript -->
+    </div>
+
+    </div> <!-- col -->
+</div> <!-- row -->
+    <div class="row">
+        <div class="col-md-3">
+            <label for="schoolInput">Choose a School:</label>
+            <input type="text" id="schoolInput" list="schoolCodes" name="schoolCode" placeholder="Type to search...">
+        </div>
+        <div class="col-md-3">
+            <label for="yearInput">Choose a Year:</label>
+            <input type="text" id="yearInput" list="yearCodes" name="yearCode" placeholder="Type to search...">
+        </div>
     <div class = "row">
         <div class = "col-md-3">
         
