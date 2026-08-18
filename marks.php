@@ -84,10 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="radio-group d-flex align-items-center mb-0">
                     <strong class="me-3">School:</strong>
-                    <input type="radio" id="school_1" name="school" value="school_1" checked>
+                    <input type="radio" id="school_1" name="school" value="PIOHS" checked>
                     <label for="school_1" class="mb-0 mt-0">High School</label>
                     
-                    <input type="radio" id="school_2" name="school" value="school_2">
+                    <input type="radio" id="school_2" name="school" value="SMC">
                     <label for="school_2" class="mb-0 mt-0">Primary School</label>
                 </div>
 

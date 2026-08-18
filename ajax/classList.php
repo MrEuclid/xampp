@@ -24,7 +24,8 @@ if ($targetSchool === 'school_1') {
 $query = "SELECT DISTINCT Grade AS code 
           FROM id_year_grade 
           WHERE School = ?
-          AND Year = ?";        
+          AND Year = ?
+          ORDER BY Grade ASC";        
 
 // Prepare the statement
 if ($stmt = $conn->prepare($query)) {

@@ -5,7 +5,7 @@ header('Content-Type: application/json; charset=utf-8');
 //  Include your database connection script
 require_once 'connectDB.php';
 
-$query = "SELECT code FROM hssubjects";
+$query = "SELECT code FROM hssubjects ORDER BY code ASC"; // Adjust the query as needed
 
          
 //  Prepare the statement using the MySQLi connection ($conn)
