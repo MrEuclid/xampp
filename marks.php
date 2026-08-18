@@ -14,7 +14,27 @@
   <p>Use this page to record student test results</p> 
 </div>
 
-    
+ <div class="container-fluid">
+<form id="dataForm"> 
+    <div class = "row">
+        <div class = "col-md-3">
+            <label for="subjectCode">Subject Code:</label>
+            <input type="text" name="subjectCode" required> 
+        </div>
+        <div class = "col-md-3">
+            <label for="classCode">Class Code:</label>
+            <input type="text" name="classCode" required> 
+        </div>
+        <div class = "col-md-3">
+            <label for="testCode">Test Code:</label><input type="text" name="testCode" required> 
+        </div>
+ <div class = "col-md-3">
+            <button type="submit">Send Data</button>
+        </div>
+
+ </form> 
+
+</div>   
     <label for="subject-input">Choose a Subject Code:</label>
     <input type="text" id="subject-input" list="subject-codes" placeholder="Type to search...">
     
