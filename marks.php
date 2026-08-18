@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <title>Get marks</title>
+    <title>Get class,subject and test information</title>
 
     <style>
         /* 1. Hide the default radio buttons */
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="container-fluid p-5 bg-primary text-white text-center">
     <h1>Get student marks</h1>
-    <p>Use this page to record student test results</p> 
+    <p>Use this page to select the subject,class and test information</p> 
 </div>
 
 <div class="container-fluid mt-4">
@@ -100,8 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="row mt-4 justify-content-center">
             <div class="col-md-3">
-                <label for="subjectInput">Choose a Subject Code:</label>
-                <input type="text" id="subjectInput" list="subjectCodes" name="subjectCode" class="form-control" placeholder="Type to search...">
+                <label for="subjectInput">Choose a Subject Code:</label><input type="text" id="subjectInput" list="subjectCodes" name="subjectCode" class="form-control" placeholder="Type to search...">
             </div>
             
             <div class="col-md-3">
@@ -133,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const today = new Date();
         const currentMonth = today.getMonth(); // 0 = Jan, 8 = Sept
         const currentYear = today.getFullYear();
-
+console.log(today);
         // If Sept or later, school year started this year. Otherwise, last year.
         const startYear = (currentMonth >= 8) ? currentYear : currentYear - 1;
         const currentSchoolYear = `${startYear}-${startYear + 1}`;
