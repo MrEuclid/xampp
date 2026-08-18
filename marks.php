@@ -60,35 +60,28 @@
 </div> <!-- container -->
 
  <div class="container-fluid">
-<form id="dataForm"> 
-        <div class="row">
-            <div   class ="col-12 text-center">
-                <!-- 1. Create a radio button group for selecting the school -->
-                     <div class="radio-group">
-        <strong>School:</strong><br>
-        <input type="radio" id="school_1" name="school" value="school_1">
-        <label for="school_1">High School</label>
+<form id="dataForm" method = "POST" action = "marks.php"> 
+      <div class="row mb-3">
+    <!-- d-flex puts the two groups side-by-side, gap-4 adds space between them -->
+    <div class="col-12 d-flex flex-wrap justify-content-center align-items-center gap-4">
         
-        <input type="radio" id="school_2" name="school" value="school_2">
-        <label for="school_2">Primary School</label>
-    </div>
+        <!-- flex on the group aligns the "School:" text perfectly with the chips -->
+        <div class="radio-group d-flex align-items-center mb-0">
+            <strong class="me-3">School:</strong>
+            <input type="radio" id="school_1" name="school" value="school_1" checked>
+            <label for="school_1" class="mb-0 mt-0">High School</label>
+            
+            <input type="radio" id="school_2" name="school" value="school_2">
+            <label for="school_2" class="mb-0 mt-0">Primary School</label>
+        </div>
 
-    <div class="radio-group" id="year-container">
-        <strong>School Year:</strong><br>
-        <!-- Radio buttons will be injected here by JavaScript -->
-    </div>
+        <div class="radio-group d-flex align-items-center mb-0" id="year-container">
+            <strong class="me-3">School Year:</strong>
+            <!-- Radio buttons will be injected here by JavaScript -->
+        </div>
 
     </div> <!-- col -->
 </div> <!-- row -->
-    <div class="row">
-        <div class="col-md-3">
-            <label for="schoolInput">Choose a School:</label>
-            <input type="text" id="schoolInput" list="schoolCodes" name="schoolCode" placeholder="Type to search...">
-        </div>
-        <div class="col-md-3">
-            <label for="yearInput">Choose a Year:</label>
-            <input type="text" id="yearInput" list="yearCodes" name="yearCode" placeholder="Type to search...">
-        </div>
     <div class = "row">
         <div class = "col-md-3">
         
@@ -127,34 +120,33 @@
     </datalist>
 
     <script>
+       
         document.addEventListener('DOMContentLoaded', function() {
             
-            fetch('ajax/hsList.php')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const dataList = document.getElementById('subject-codes');
-                    
-                    // Loop through the array of objects
-                    data.forEach(item => {
-                        const option = document.createElement('option');
-                        
-                        // Grab the 'code' property from your JSON object
-                        option.value = item.code; 
-                        
-                        dataList.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('There was a problem loading the subject codes:', error);
-                });
+            // --- PART A: Generate the School Years ---
+            const yearContainer = document.getElementById('year-container');
+            const today = new Date();
+            const currentMonth = today.getMonth(); // 0 = Jan, 8 = Sept
+            const currentYear = today.getFullYear();
+
+            const startYear = (currentMonth >= 8) ? currentYear : currentYear - 1;
+            const currentSchoolYear = `${startYear}-${startYear + 1}`;
+            const prevSchoolYear = `${startYear - 1}-${startYear}`;
+
+            // Inject the calculated years as radio buttons
+            // Note: We use the 'for' attribute in the label so clicking the text selects the radio button
+            yearContainer.innerHTML += `
+                <input type="radio" id="year_current" name="schoolYear" value="${currentSchoolYear}" checked>
+                <label for="year_current">Current (${currentSchoolYear})</label>
                 
-        });
-    </script>
+                <input type="radio" id="year_prev" name="schoolYear" value="${prevSchoolYear}">
+                <label for="year_prev">Previous (${prevSchoolYear})</label>
+            `;
+            });
+            
+        
+        </script>
+
 
 </body>
 </html>
