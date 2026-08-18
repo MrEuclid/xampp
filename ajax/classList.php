@@ -9,7 +9,7 @@ $targetYear = 2026;
 
 $query = "SELECT 
                DISTINCT Grade 
-          FROM id_year 
+          FROM id_year_grade 
           WHERE School = ?
           AND Year = ?";        
 //  Prepare the statement using the MySQLi connection ($conn)
