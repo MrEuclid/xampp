@@ -39,10 +39,17 @@
  </form> 
 </div> <!-- container -->
   
-    <label for="subject-input">Choose a Subject Code:</label>
-    <input type="text" id="subject-input" list="subject-codes" placeholder="Type to search...">
+ 
     
-    <datalist id="subject-codes">
+    <datalist id="subjectCodes">
+        <!-- Options will be injected here by JavaScript -->
+    </datalist>
+
+      <datalist id="classCodes">
+        <!-- Options will be injected here by JavaScript -->
+    </datalist>
+
+      <datalist id="testCodes">
         <!-- Options will be injected here by JavaScript -->
     </datalist>
 
