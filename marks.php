@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="radio-group d-flex align-items-center mb-0" id="year-container">
                     <strong class="me-3">School Year:</strong>
-                    </div>
+                </div>
 
             </div> 
         </div> 
@@ -186,6 +186,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         });
                     })
                     .catch(error => console.error('Error fetching classes:', error));
+
+                // 3. Fetch Test Codes
+                fetch(`ajax/testCode.php?${queryString}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const testCodesList = document.getElementById('testCodes');
+                        testCodesList.innerHTML = '';
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.code; 
+                            testCodesList.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching tests:', error));
             }
         }
 
