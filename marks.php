@@ -1,20 +1,4 @@
-<?php
-// --- PHP Form Handler ---
-// If the form was submitted, display the captured variables cleanly.
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    echo "<div class='container-fluid mt-3'>";
-    echo "<div class='alert alert-success'>";
-    echo "<h3>Data Received from Form:</h3>";
-    echo "<pre>";
-    print_r($_POST);
-    echo "</pre>";
-    echo "</div>";
-    echo "</div>";
-    
-    // Uncomment the line below if you specifically need the massive phpinfo() output
-    // phpinfo(INFO_VARIABLES);
-}
-?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
