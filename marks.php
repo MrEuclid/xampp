@@ -1,5 +1,6 @@
 <?php
 // --- PHP Form Handler ---
+/*
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "<div class='container-fluid mt-3'>";
     echo "<div class='alert alert-success'>";
@@ -10,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "</div>";
     echo "</div>";
 }
+    */
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -125,18 +127,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <datalist id="testCodes"></datalist>
 
 <script>
-    // Helper function to enforce whole numbers and bounds on the fly
+    // Helper function to validate input with soft red highlighting and save-blocking
     function validateScore(input, maxScore) {
-        let val = input.value;
-        if (val !== "") {
-            let num = parseInt(val, 10);
-            if (isNaN(num) || num < 0) {
-                input.value = 0;
-            } else if (num > maxScore) {
-                input.value = maxScore;
-            } else {
-                input.value = num;
-            }
+        const val = input.value.trim();
+
+        // If blank, it's valid (blank marks won't be saved)
+        if (val === "") {
+            input.classList.remove('is-invalid', 'bg-danger-subtle');
+            checkFormValidity();
+            return;
+        }
+
+        // Check if it contains decimals or isn't a strict whole number
+        const num = Number(val);
+        const isWholeNumber = /^\d+$/.test(val);
+
+        if (!isWholeNumber || num < 0 || num > maxScore) {
+            // Invalid: highlight red
+            input.classList.add('is-invalid', 'bg-danger-subtle');
+        } else {
+            // Valid: remove highlighting
+            input.classList.remove('is-invalid', 'bg-danger-subtle');
+        }
+
+        checkFormValidity();
+    }
+
+    // Function to disable/enable the save button if any errors exist on the page
+    function checkFormValidity() {
+        const saveBtn = document.getElementById('saveMarksBtn');
+        if (!saveBtn) return;
+
+        const invalidInputs = document.querySelectorAll('.mark-input.is-invalid');
+        if (invalidInputs.length > 0) {
+            saveBtn.disabled = true;
+            saveBtn.title = "Please fix highlighted errors before saving.";
+        } else {
+            saveBtn.disabled = false;
+            saveBtn.title = "";
         }
     }
 
@@ -283,7 +311,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <th style="width: 35%;">Score (Max: ${maxScore})</th>
                                     </tr>
                                 </thead>
-                               <tbody>
+                                <tbody>
                 `;
 
                 studentData.forEach(student => {
@@ -295,11 +323,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="number" 
                                        class="form-control mark-input" 
                                        data-student-id="${student.studentID}" 
-                                       min="0" 
-                                       max="${maxScore}" 
-                                       step="1" 
+                                       step="any" 
                                        oninput="validateScore(this, ${maxScore})"
-                                       placeholder="Blanks ignored">
+                                       placeholder="Blank = skip">
                             </td>
                         </tr>
                     `;
