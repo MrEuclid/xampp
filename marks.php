@@ -212,6 +212,110 @@ console.log(today);
         
         // Trigger the fetch immediately to populate defaults on page load
         fetchDataLists();
+        // --- PART D: Form Interception & Grid Generation ---
+const dataForm = document.getElementById('dataForm');
+const gradingContainer = document.getElementById('grading-container');
+
+dataForm.addEventListener('submit', function(e) {
+    // 1. Stop the standard page refresh
+    e.preventDefault(); 
+
+    // 2. Gather the current values from the form inputs
+    const selectedSchool = document.querySelector('input[name="school"]:checked').value;
+    const selectedYear = document.querySelector('input[name="schoolYear"]:checked').value;
+    const classCode = document.getElementById('classInput').value;
+    const subjectCode = document.getElementById('subjectInput').value;
+    const testCode = document.getElementById('testInput').value;
+
+    // Basic validation to ensure they picked everything
+    if (!classCode || !subjectCode || !testCode) {
+        alert("Please select a Subject, Class, and Test Code before proceeding.");
+        return;
+    }
+
+    // 3. Build the query string for the endpoint
+    const params = { 
+        school: selectedSchool, 
+        schoolYear: selectedYear, 
+        classCode: classCode 
+    };
+    const queryString = new URLSearchParams(params).toString();
+
+    // 4. Show a loading spinner while fetching
+    gradingContainer.innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Loading student roster...</p>
+        </div>`;
+
+    // 5. Fetch the students and build the UI
+    fetch(`ajax/studentList.php?${queryString}`)
+        .then(response => response.json())
+        .then(data => {
+            // Handle empty results safely
+            if (data.length === 0 || data.error) {
+                gradingContainer.innerHTML = `<div class="alert alert-warning">No students found for class ${classCode}.</div>`;
+                return;
+            }
+
+            // Start building the HTML for the table
+            let tableHTML = `
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Enter Marks</h4>
+                        <span><strong>Class:</strong> ${classCode} | <strong>Subject:</strong> ${subjectCode} | <strong>Test:</strong> ${testCode}</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 15%;">ID</th>
+                                    <th style="width: 50%;">Name</th>
+                                    <th style="width: 35%;">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            // Loop through each student and create a row
+            data.forEach(student => {
+                tableHTML += `
+                    <tr>
+                        <td class="align-middle">${student.studentID}</td>
+                        <td class="align-middle">${student.name}</td>
+                        <td>
+                            <!-- We store the studentID in a data attribute to make saving easier -->
+                            <input type="number" 
+                                   class="form-control mark-input" 
+                                   data-student-id="${student.studentID}" 
+                                   min="0" 
+                                   max="100" 
+                                   step="0.1" 
+                                   placeholder="Score">
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Close the table and add the final Save button
+            tableHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer text-end p-3">
+                        <button id="saveMarksBtn" class="btn btn-success px-5">Save All Marks</button>
+                    </div>
+                </div>
+            `;
+
+            // Inject the completed HTML into the DOM
+            gradingContainer.innerHTML = tableHTML;
+        })
+        .catch(error => {
+            console.error('Error fetching students:', error);
+            gradingContainer.innerHTML = `<div class="alert alert-danger">Error loading student list. Check console.</div>`;
+        });
+});
     });
 </script>
 
