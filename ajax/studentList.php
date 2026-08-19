@@ -6,16 +6,17 @@ header('Content-Type: application/json; charset=utf-8');
 require_once 'connectDB.php';
 
 // 2. Capture the parameters sent by the frontend AJAX
-/*
+
 $targetSchool = $_GET['school'] ?? '';
 $rawYear = $_GET['schoolYear'] ?? '';
 $classCode = $_GET['classCode'] ?? '';
-*/
 
-$targetSchool = 'PIOHS'
+
+/*
+$targetSchool = 'PIOHS' ;
 $rawYear = 2026;
-$classCode = 'ENG' ;
-
+$classCode = 'G12A' ;
+*/
 // 3. Transform the year data (using the last 4 characters)
 $targetYear = intval(substr($rawYear, -4));
 
@@ -31,12 +32,14 @@ if ($targetSchool === 'school_1') {
 
 // 4. The Query
 // IMPORTANT: Update 'students', 'student_id', 'first_name', etc., to match your actual database schema
-$query = "SELECT student_id, first_name, last_name 
+$query = "SELECT students.studentID, concat(First_name,' ',Family_name) as name
           FROM students 
+          JOIN id_year_grade ON students.studentID = id_year_grade.studentID
           WHERE school = ? 
           AND year = ? 
-          AND class_code = ?
-          ORDER BY first_name ASC";        
+          AND Grade = ?
+          AND Gone = 'N'
+          ORDER BY Family_name,First_name ASC";        
 
 // Prepare the statement
 if ($stmt = $conn->prepare($query)) {

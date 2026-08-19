@@ -118,6 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div> 
     </form> 
+    <!-- This is where the interactive grading table will be injected -->
+<div id="grading-container" class="container-fluid mt-5 mb-5"></div>
 </div> 
     
 <datalist id="subjectCodes"></datalist>
