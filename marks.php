@@ -300,6 +300,85 @@ dataForm.addEventListener('submit', function(e) {
             gradingContainer.innerHTML = `<div class="alert alert-danger">Error loading student list. Check console.</div>`;
         });
 });
+
+// --- PART E: Collect and Save Marks ---
+document.addEventListener('click', function(e) {
+    // Check if the clicked element is our dynamically generated Save button
+    if (e.target && e.target.id === 'saveMarksBtn') {
+        const saveBtn = e.target;
+        
+        // 1. Gather context data from the main form
+        const selectedSchool = document.querySelector('input[name="school"]:checked').value;
+        const selectedYear = document.querySelector('input[name="schoolYear"]:checked').value;
+        const classCode = document.getElementById('classInput').value;
+        const subjectCode = document.getElementById('subjectInput').value;
+        const testCode = document.getElementById('testInput').value;
+
+        // 2. Loop through the grid and collect the scores
+        const marksData = [];
+        const scoreInputs = document.querySelectorAll('.mark-input');
+        
+        scoreInputs.forEach(input => {
+            const score = input.value.trim();
+            // Only collect data if the teacher actually typed a score
+            if (score !== "") {
+                marksData.push({
+                    student_id: input.getAttribute('data-student-id'),
+                    score: parseFloat(score)
+                });
+            }
+        });
+
+        // 3. Stop if they didn't enter anything
+        if (marksData.length === 0) {
+            alert("No marks have been entered to save.");
+            return;
+        }
+
+        // 4. Build the final JSON payload
+        const payload = {
+            school: selectedSchool,
+            year: selectedYear,
+            classCode: classCode,
+            subjectCode: subjectCode,
+            testCode: testCode,
+            marks: marksData
+        };
+
+        // 5. Provide UI feedback while saving
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+
+        // 6. Send the data to the PHP endpoint
+        fetch('ajax/saveMarks.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Success! ${data.savedCount} marks were saved.`);
+                // Reset button UI
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save All Marks';
+            } else {
+                alert("Error saving marks: " + (data.error || "Unknown error"));
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save All Marks';
+            }
+        })
+        .catch(error => {
+            console.error('Error saving:', error);
+            alert("A network error occurred while saving.");
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save All Marks';
+        });
+    }
+});
+
     });
 </script>
 
