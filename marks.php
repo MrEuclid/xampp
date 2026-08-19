@@ -1,5 +1,6 @@
 <?php
 // --- PHP Form Handler ---
+/*
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "<div class='container-fluid mt-3'>";
     echo "<div class='alert alert-success'>";
@@ -10,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "</div>";
     echo "</div>";
 }
+    */
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -73,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <div class="container-fluid mt-4">
-    <form id="dataForm" method="POST" action="marks.php"> 
+    <form id="dataForm" > 
         
         <div class="row mb-3">
             <div class="col-12 d-flex flex-wrap justify-content-center align-items-center gap-4">

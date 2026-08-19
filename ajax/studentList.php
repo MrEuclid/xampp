@@ -4,6 +4,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 // Include your database connection script
 require_once 'connectDB.php';
+
 // Captured parameters
 $targetSchool = $_GET['school'] ?? '';
 $rawYear = $_GET['schoolYear'] ?? '';
@@ -13,9 +14,7 @@ $testCode = $_GET['testCode'] ?? '';
 
 $targetYear = intval(substr($rawYear, -4));
 
-// ... School name mapping ...
-
-// The updated query with a LEFT JOIN to hsmarks
+// The corrected query: using `ig.Year` (capitalized) and `ig.Grade`
 $query = "SELECT s.studentID, 
                  CONCAT(s.First_name, ' ', s.Family_name) AS name, 
                  m.score 
@@ -25,8 +24,8 @@ $query = "SELECT s.studentID,
                AND m.classCode = ? 
                AND m.subjectCode = ? 
                AND m.testCode = ?
-          WHERE s.school = ? 
-          AND ig.year = ? 
+          WHERE ig.school = ? 
+          AND ig.Year = ? 
           AND ig.Grade = ?
           AND s.Gone = 'N'
           ORDER BY s.Family_name, s.First_name ASC";
@@ -44,4 +43,7 @@ if ($stmt = $conn->prepare($query)) {
 
     echo json_encode($students);
     $stmt->close();
+} else {
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
 }
+?>
