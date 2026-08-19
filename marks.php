@@ -1,6 +1,5 @@
 <?php
 // --- PHP Form Handler ---
-/*
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "<div class='container-fluid mt-3'>";
     echo "<div class='alert alert-success'>";
@@ -11,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "</div>";
     echo "</div>";
 }
-    */
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -252,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         fetchDataLists();
 
-        // --- PART D: Form Interception & Grid Generation with Maxima Support ---
+        // --- PART D: Form Interception & Grid Generation with Maxima & Preload Support ---
         const dataForm = document.getElementById('dataForm');
         const gradingContainer = document.getElementById('grading-container');
 
@@ -270,20 +268,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 return;
             }
 
+            // We pass subjectCode and testCode so studentList.php can pull existing pre-loaded marks
             const params = { 
                 school: selectedSchool, 
                 schoolYear: selectedYear, 
-                classCode: classCode 
+                classCode: classCode,
+                subjectCode: subjectCode,
+                testCode: testCode
             };
             const queryString = new URLSearchParams(params).toString();
 
             gradingContainer.innerHTML = `
                 <div class="text-center">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-2">Loading student roster and maxima...</p>
+                    <p class="mt-2">Loading student roster and existing marks...</p>
                 </div>`;
 
-            // Fetch Maxima and Student List in parallel
+            // Fetch Maxima and Student List (with scores) in parallel
             Promise.all([
                 fetch(`ajax/getMax.php?subjectCode=${subjectCode}&classCode=${classCode}`).then(res => res.json()),
                 fetch(`ajax/studentList.php?${queryString}`).then(res => res.json())
@@ -299,7 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 let tableHTML = `
                     <div class="card shadow-sm">
                         <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">Enter Marks</h4>
+                            <h4 class="mb-0">Enter / Edit Marks</h4>
                             <span><strong>Class:</strong> ${classCode} | <strong>Subject:</strong> ${subjectCode} | <strong>Test:</strong> ${testCode} | <strong>Max Score:</strong> ${maxScore}</span>
                         </div>
                         <div class="card-body p-0">
@@ -315,6 +316,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 `;
 
                 studentData.forEach(student => {
+                    // Pre-load existing score if available in database
+                    const existingScore = (student.score !== null && student.score !== undefined) ? student.score : '';
+
                     tableHTML += `
                         <tr>
                             <td class="align-middle">${student.studentID}</td>
@@ -324,6 +328,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                        class="form-control mark-input" 
                                        data-student-id="${student.studentID}" 
                                        step="any" 
+                                       value="${existingScore}"
                                        oninput="validateScore(this, ${maxScore})"
                                        placeholder="Blank = skip">
                             </td>
@@ -400,7 +405,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert(`Success! ${data.savedCount} marks were saved.`);
+                        alert(`Success! ${data.savedCount} marks were saved/updated.`);
                         saveBtn.disabled = false;
                         saveBtn.textContent = 'Save All Marks';
                     } else {
