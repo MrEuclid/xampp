@@ -323,7 +323,7 @@ document.addEventListener('click', function(e) {
             // Only collect data if the teacher actually typed a score
             if (score !== "") {
                 marksData.push({
-                    student_id: input.getAttribute('data-student-id'),
+                    studentID: input.getAttribute('data-student-id'),
                     score: parseFloat(score)
                 });
             }

@@ -41,9 +41,9 @@ if ($targetSchool === 'school_1') {
 $conn->begin_transaction();
 
 try {
-    // IMPORTANT: Update 'test_scores' and its columns to match your actual database table
-    $query = "INSERT INTO test_scores 
-              (studentID, classCode, subjectCode, testCode, score) 
+    // IMPORTANT: Update 'hsmarks' and its columns to match your actual database table
+    $query = "INSERT INTO hsmarks
+              (studentID, classcode, subjectCode, testCode, score) 
               VALUES (?,  ?, ?, ?, ?) 
               ON DUPLICATE KEY UPDATE score = VALUES(score)";
     
@@ -57,13 +57,13 @@ try {
 
     // 6. Loop through the array and execute the query for each student
     foreach ($marks as $mark) {
-        $studentId = $mark['student_id'];
+        $studentId = $mark['studentID'];
         $score = $mark['score'];
         
         // Bind parameters: 
         // s = string (school), i = integer (year), s = string (class), s = string (subject)
         // s = string (test), s = string (student_id), d = double/decimal (score)
-        $stmt->bind_param("sissssd", 
+        $stmt->bind_param("isssi", 
             $studentId, 
             $classCode, 
             $subjectCode, 
