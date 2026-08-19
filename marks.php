@@ -1,4 +1,16 @@
-
+<?php
+// --- PHP Form Handler ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    echo "<div class='container-fluid mt-3'>";
+    echo "<div class='alert alert-success'>";
+    echo "<h3>Data Received from Form:</h3>";
+    echo "<pre>";
+    print_r($_POST);
+    echo "</pre>";
+    echo "</div>";
+    echo "</div>";
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +18,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <title>Get class,subject and test information</title>
+    <title>Get class, subject and test information</title>
 
     <style>
         /* 1. Hide the default radio buttons */
@@ -57,7 +69,7 @@
 
 <div class="container-fluid p-5 bg-primary text-white text-center">
     <h1>Get student marks</h1>
-    <p>Use this page to select the subject,class and test information</p> 
+    <p>Use this page to select the subject, class and test information</p> 
 </div>
 
 <div class="container-fluid mt-4">
@@ -84,7 +96,8 @@
 
         <div class="row mt-4 justify-content-center">
             <div class="col-md-3">
-                <label for="subjectInput">Choose a Subject Code:</label><input type="text" id="subjectInput" list="subjectCodes" name="subjectCode" class="form-control" placeholder="Type to search...">
+                <label for="subjectInput">Choose a Subject Code:</label>
+                <input type="text" id="subjectInput" list="subjectCodes" name="subjectCode" class="form-control" placeholder="Type to search...">
             </div>
             
             <div class="col-md-3">
@@ -102,8 +115,9 @@
             </div>
         </div> 
     </form> 
+    
     <!-- This is where the interactive grading table will be injected -->
-<div id="grading-container" class="container-fluid mt-5 mb-5"></div>
+    <div id="grading-container" class="container-fluid mt-5 mb-5"></div>
 </div> 
     
 <datalist id="subjectCodes"></datalist>
@@ -111,15 +125,29 @@
 <datalist id="testCodes"></datalist>
 
 <script>
+    // Helper function to enforce whole numbers and bounds on the fly
+    function validateScore(input, maxScore) {
+        let val = input.value;
+        if (val !== "") {
+            let num = parseInt(val, 10);
+            if (isNaN(num) || num < 0) {
+                input.value = 0;
+            } else if (num > maxScore) {
+                input.value = maxScore;
+            } else {
+                input.value = num;
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         
         // --- PART A: Generate the School Years ---
         const yearContainer = document.getElementById('year-container');
         const today = new Date();
-        const currentMonth = today.getMonth(); // 0 = Jan, 8 = Sept
+        const currentMonth = today.getMonth(); 
         const currentYear = today.getFullYear();
-console.log(today);
-        // If Sept or later, school year started this year. Otherwise, last year.
+
         const startYear = (currentMonth >= 8) ? currentYear : currentYear - 1;
         const currentSchoolYear = `${startYear}-${startYear + 1}`;
         const prevSchoolYear = `${startYear - 1}-${startYear}`;
@@ -194,190 +222,175 @@ console.log(today);
             radio.addEventListener('change', fetchDataLists);
         });
         
-        // Trigger the fetch immediately to populate defaults on page load
         fetchDataLists();
-        // --- PART D: Form Interception & Grid Generation ---
-const dataForm = document.getElementById('dataForm');
-const gradingContainer = document.getElementById('grading-container');
 
-dataForm.addEventListener('submit', function(e) {
-    // 1. Stop the standard page refresh
-    e.preventDefault(); 
+        // --- PART D: Form Interception & Grid Generation with Maxima Support ---
+        const dataForm = document.getElementById('dataForm');
+        const gradingContainer = document.getElementById('grading-container');
 
-    // 2. Gather the current values from the form inputs
-    const selectedSchool = document.querySelector('input[name="school"]:checked').value;
-    const selectedYear = document.querySelector('input[name="schoolYear"]:checked').value;
-    const classCode = document.getElementById('classInput').value;
-    const subjectCode = document.getElementById('subjectInput').value;
-    const testCode = document.getElementById('testInput').value;
+        dataForm.addEventListener('submit', function(e) {
+            e.preventDefault(); 
 
-    // Basic validation to ensure they picked everything
-    if (!classCode || !subjectCode || !testCode) {
-        alert("Please select a Subject, Class, and Test Code before proceeding.");
-        return;
-    }
+            const selectedSchool = document.querySelector('input[name="school"]:checked').value;
+            const selectedYear = document.querySelector('input[name="schoolYear"]:checked').value;
+            const classCode = document.getElementById('classInput').value;
+            const subjectCode = document.getElementById('subjectInput').value;
+            const testCode = document.getElementById('testInput').value;
 
-    // 3. Build the query string for the endpoint
-    const params = { 
-        school: selectedSchool, 
-        schoolYear: selectedYear, 
-        classCode: classCode 
-    };
-    const queryString = new URLSearchParams(params).toString();
-
-    // 4. Show a loading spinner while fetching
-    gradingContainer.innerHTML = `
-        <div class="text-center">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2">Loading student roster...</p>
-        </div>`;
-
-    // 5. Fetch the students and build the UI
-    fetch(`ajax/studentList.php?${queryString}`)
-        .then(response => response.json())
-        .then(data => {
-            // Handle empty results safely
-            if (data.length === 0 || data.error) {
-                gradingContainer.innerHTML = `<div class="alert alert-warning">No students found for class ${classCode}.</div>`;
+            if (!classCode || !subjectCode || !testCode) {
+                alert("Please select a Subject, Class, and Test Code before proceeding.");
                 return;
             }
 
-            // Start building the HTML for the table
-            let tableHTML = `
-                <div class="card shadow-sm">
-                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">Enter Marks</h4>
-                        <span><strong>Class:</strong> ${classCode} | <strong>Subject:</strong> ${subjectCode} | <strong>Test:</strong> ${testCode}</span>
-                    </div>
-                    <div class="card-body p-0">
-                        <table class="table table-striped table-hover mb-0">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th style="width: 15%;">ID</th>
-                                    <th style="width: 50%;">Name</th>
-                                    <th style="width: 35%;">Score</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-            `;
+            const params = { 
+                school: selectedSchool, 
+                schoolYear: selectedYear, 
+                classCode: classCode 
+            };
+            const queryString = new URLSearchParams(params).toString();
 
-            // Loop through each student and create a row
-            data.forEach(student => {
-                tableHTML += `
-                    <tr>
-                        <td class="align-middle">${student.studentID}</td>
-                        <td class="align-middle">${student.name}</td>
-                        <td>
-                            <!-- We store the studentID in a data attribute to make saving easier -->
-                            <input type="number" 
-                                   class="form-control mark-input" 
-                                   data-student-id="${student.studentID}" 
-                                   min="0" 
-                                   max="100" 
-                                   step="0.1" 
-                                   placeholder="Score">
-                        </td>
-                    </tr>
+            gradingContainer.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2">Loading student roster and maxima...</p>
+                </div>`;
+
+            // Fetch Maxima and Student List in parallel
+            Promise.all([
+                fetch(`ajax/getMax.php?subjectCode=${subjectCode}&classCode=${classCode}`).then(res => res.json()),
+                fetch(`ajax/studentList.php?${queryString}`).then(res => res.json())
+            ])
+            .then(([maxData, studentData]) => {
+                const maxScore = maxData.max ?? 100;
+
+                if (studentData.length === 0 || studentData.error) {
+                    gradingContainer.innerHTML = `<div class="alert alert-warning">No students found for class ${classCode}.</div>`;
+                    return;
+                }
+
+                let tableHTML = `
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">Enter Marks</h4>
+                            <span><strong>Class:</strong> ${classCode} | <strong>Subject:</strong> ${subjectCode} | <strong>Test:</strong> ${testCode} | <strong>Max Score:</strong> ${maxScore}</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="width: 15%;">ID</th>
+                                        <th style="width: 50%;">Name</th>
+                                        <th style="width: 35%;">Score (Max: ${maxScore})</th>
+                                    </tr>
+                                </thead>
+                               <tbody>
                 `;
+
+                studentData.forEach(student => {
+                    tableHTML += `
+                        <tr>
+                            <td class="align-middle">${student.studentID}</td>
+                            <td class="align-middle">${student.name}</td>
+                            <td>
+                                <input type="number" 
+                                       class="form-control mark-input" 
+                                       data-student-id="${student.studentID}" 
+                                       min="0" 
+                                       max="${maxScore}" 
+                                       step="1" 
+                                       oninput="validateScore(this, ${maxScore})"
+                                       placeholder="Blanks ignored">
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tableHTML += `
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer text-end p-3">
+                            <button id="saveMarksBtn" class="btn btn-success px-5">Save All Marks</button>
+                        </div>
+                    </div>
+                `;
+
+                gradingContainer.innerHTML = tableHTML;
+            })
+            .catch(error => {
+                console.error('Error loading grading grid:', error);
+                gradingContainer.innerHTML = `<div class="alert alert-danger">Error loading data. Check console.</div>`;
             });
-
-            // Close the table and add the final Save button
-            tableHTML += `
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card-footer text-end p-3">
-                        <button id="saveMarksBtn" class="btn btn-success px-5">Save All Marks</button>
-                    </div>
-                </div>
-            `;
-
-            // Inject the completed HTML into the DOM
-            gradingContainer.innerHTML = tableHTML;
-        })
-        .catch(error => {
-            console.error('Error fetching students:', error);
-            gradingContainer.innerHTML = `<div class="alert alert-danger">Error loading student list. Check console.</div>`;
         });
-});
 
-// --- PART E: Collect and Save Marks ---
-document.addEventListener('click', function(e) {
-    // Check if the clicked element is our dynamically generated Save button
-    if (e.target && e.target.id === 'saveMarksBtn') {
-        const saveBtn = e.target;
-        
-        // 1. Gather context data from the main form
-        const selectedSchool = document.querySelector('input[name="school"]:checked').value;
-        const selectedYear = document.querySelector('input[name="schoolYear"]:checked').value;
-        const classCode = document.getElementById('classInput').value;
-        const subjectCode = document.getElementById('subjectInput').value;
-        const testCode = document.getElementById('testInput').value;
+        // --- PART E: Collect and Save Marks ---
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'saveMarksBtn') {
+                const saveBtn = e.target;
+                
+                const selectedSchool = document.querySelector('input[name="school"]:checked').value;
+                const selectedYear = document.querySelector('input[name="schoolYear"]:checked').value;
+                const classCode = document.getElementById('classInput').value;
+                const subjectCode = document.getElementById('subjectInput').value;
+                const testCode = document.getElementById('testInput').value;
 
-        // 2. Loop through the grid and collect the scores
-        const marksData = [];
-        const scoreInputs = document.querySelectorAll('.mark-input');
-        
-        scoreInputs.forEach(input => {
-            const score = input.value.trim();
-            // Only collect data if the teacher actually typed a score
-            if (score !== "") {
-                marksData.push({
-                    studentID: input.getAttribute('data-student-id'),
-                    score: parseFloat(score)
+                const marksData = [];
+                const scoreInputs = document.querySelectorAll('.mark-input');
+                
+                scoreInputs.forEach(input => {
+                    const score = input.value.trim();
+                    if (score !== "") {
+                        marksData.push({
+                            studentID: input.getAttribute('data-student-id'),
+                            score: parseInt(score, 10)
+                        });
+                    }
+                });
+
+                if (marksData.length === 0) {
+                    alert("No marks have been entered to save.");
+                    return;
+                }
+
+                const payload = {
+                    school: selectedSchool,
+                    year: selectedYear,
+                    classCode: classCode,
+                    subjectCode: subjectCode,
+                    testCode: testCode,
+                    marks: marksData
+                };
+
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+
+                fetch('ajax/saveMarks.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`Success! ${data.savedCount} marks were saved.`);
+                        saveBtn.disabled = false;
+                        saveBtn.textContent = 'Save All Marks';
+                    } else {
+                        alert("Error saving marks: " + (data.error || "Unknown error"));
+                        saveBtn.disabled = false;
+                        saveBtn.textContent = 'Save All Marks';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving:', error);
+                    alert("A network error occurred while saving.");
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save All Marks';
                 });
             }
         });
-
-        // 3. Stop if they didn't enter anything
-        if (marksData.length === 0) {
-            alert("No marks have been entered to save.");
-            return;
-        }
-
-        // 4. Build the final JSON payload
-        const payload = {
-            school: selectedSchool,
-            year: selectedYear,
-            classCode: classCode,
-            subjectCode: subjectCode,
-            testCode: testCode,
-            marks: marksData
-        };
-
-        // 5. Provide UI feedback while saving
-        saveBtn.disabled = true;
-        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
-
-        // 6. Send the data to the PHP endpoint
-        fetch('ajax/saveMarks.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(`Success! ${data.savedCount} marks were saved.`);
-                // Reset button UI
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Save All Marks';
-            } else {
-                alert("Error saving marks: " + (data.error || "Unknown error"));
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Save All Marks';
-            }
-        })
-        .catch(error => {
-            console.error('Error saving:', error);
-            alert("A network error occurred while saving.");
-            saveBtn.disabled = false;
-            saveBtn.textContent = 'Save All Marks';
-        });
-    }
-});
 
     });
 </script>

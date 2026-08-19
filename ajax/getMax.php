@@ -2,9 +2,11 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once 'connectDB.php';
 
-$subjectCode = $_GET['subjectCode'] ?? '';
-$classCode = $_GET['classCode'] ?? ''; // e.g., "G10", "G12B"
+// $subjectCode = $_GET['subjectCode'] ?? '';
+// $classCode = $_GET['classCode'] ?? ''; // e.g., "G10", "G12B"
 
+$subjectCode = 'CHE';
+$classCode = 'G12A' ;
 $maxScore = 100; // Default fallback safety net
 
 $query = "SELECT max FROM hsMaxima WHERE subjectCode = ? AND grade = ?";
